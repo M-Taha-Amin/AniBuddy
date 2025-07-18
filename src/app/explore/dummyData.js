@@ -1,0 +1,92 @@
+export const dummyAnimeData = [
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Naruto',
+    genres: ['Action', 'Adventure', 'Martial Arts'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Airing',
+    title: 'One Piece',
+    genres: ['Action', 'Adventure', 'Fantasy'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Death Note',
+    genres: ['Supernatural', 'Thriller', 'Mystery'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Demon Slayer',
+    genres: ['Action', 'Historical', 'Supernatural'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Attack on Titan',
+    genres: ['Action', 'Drama', 'Fantasy'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Airing',
+    title: 'My Hero Academia',
+    genres: ['Action', 'Comedy', 'Super Power'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Airing',
+    title: 'Jujutsu Kaisen',
+    genres: ['Action', 'Fantasy', 'Supernatural'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Bleach',
+    genres: ['Action', 'Shounen', 'Super Power'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Fullmetal Alchemist: Brotherhood',
+    genres: ['Action', 'Adventure', 'Drama'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Airing',
+    title: 'Spy x Family',
+    genres: ['Comedy', 'Action', 'Slice of Life'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Airing',
+    title: 'Tokyo Revengers',
+    genres: ['Action', 'Supernatural', 'Drama'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Hiatus',
+    title: 'Hunter x Hunter',
+    genres: ['Action', 'Adventure', 'Fantasy'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Vinland Saga',
+    genres: ['Action', 'Drama', 'Historical'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Airing',
+    title: 'Chainsaw Man',
+    genres: ['Action', 'Supernatural', 'Gore'],
+  },
+  {
+    poster: 'https://cdn.myanimelist.net/images/anime/1182/149879.jpg',
+    status: 'Finished Airing',
+    title: 'Mob Psycho 100',
+    genres: ['Action', 'Comedy', 'Supernatural'],
+  },
+];
