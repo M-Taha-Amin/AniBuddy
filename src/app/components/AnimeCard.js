@@ -10,11 +10,8 @@ import {
   Button,
 } from '@mui/material';
 import { AnimeCrudService } from '../services/AnimeCrudService';
-import { useRouter } from 'next/navigation';
 
-const AnimeCard = ({ anime, page = 'explore' }) => {
-  const router = useRouter();
-
+const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
   const addAnime = async () => {
     await AnimeCrudService.addAnime(anime);
     alert('Anime added to DB');
@@ -22,7 +19,7 @@ const AnimeCard = ({ anime, page = 'explore' }) => {
 
   const deleteAnime = async () => {
     await AnimeCrudService.deleteAnime(anime.id);
-    router.refresh();
+    onRemove();
   };
 
   const onClick = page == 'explore' ? addAnime : deleteAnime;
