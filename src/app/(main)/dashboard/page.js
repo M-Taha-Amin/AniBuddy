@@ -12,9 +12,9 @@ import { auth } from '@/app/lib/firebase/config';
 
 const Page = () => {
   const [animeList, setAnimeList] = useState(null);
-  const savedUser = useSaveUser();
-  const [fetching, setFetching] = useState(true);
   const [user] = useAuthState(auth);
+  const savedUser = useSaveUser(user);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     const fetchAnimeList = async () => {

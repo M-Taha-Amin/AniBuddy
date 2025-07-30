@@ -1,11 +1,9 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { auth, db } from '../lib/firebase/config';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { db } from '../lib/firebase/config';
 
-const useSaveUser = () => {
+const useSaveUser = user => {
   const [saved, setSaved] = useState(false);
-  const [user] = useAuthState(auth);
 
   useEffect(() => {
     if (!user) return;

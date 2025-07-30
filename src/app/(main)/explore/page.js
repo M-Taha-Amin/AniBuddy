@@ -7,12 +7,15 @@ import { AnimeApiService } from '@/app/services/AnimeAPIService';
 import AnimeCard from '@/app/components/AnimeCard';
 import AnimeCardSkeleton from '@/app/components/AnimeCardSkeleton';
 import useSaveUser from '@/app/hooks/useSaveUser';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/app/lib/firebase/config';
 
 const page = () => {
   const [animeList, setAnimeList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const savedUser = useSaveUser();
+  const [user] = useAuthState(auth);
+  const savedUser = useSaveUser(user);
 
   const renderedAnime = useMemo(() => {
     return animeList.map((anime, i) => <AnimeCard key={i} anime={anime} />);
@@ -61,7 +64,7 @@ const page = () => {
         </Button>
       </Box>
       <Grid container className="justify-center" spacing={4}>
-        {loading || !savedUser ? skeletonAnime : renderedAnime}
+        {loading || (user && !savedUser) ? skeletonAnime : renderedAnime}
       </Grid>
     </Container>
   );
