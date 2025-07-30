@@ -2,10 +2,7 @@ export class AnimeApiService {
   static BASE_URL = 'https://api.jikan.moe/v4/';
 
   static async getAnimeByName(name) {
-    let sanitizedName = name
-      .split(' ')
-      .map(word => word.toLowerCase())
-      .join('+');
+    const sanitizedName = encodeURIComponent(name.toLowerCase());
     try {
       const response = await fetch(
         this.BASE_URL + `anime?sfw=true&q=${sanitizedName}`
@@ -23,7 +20,7 @@ export class AnimeApiService {
         this.BASE_URL + 'top/anime?sfw=true&filter=airing'
       );
       const data = await response.json();
-      return this.sanitizeResponse(data);
+      return this.dedupeAnime(this.sanitizeResponse(data));
     } catch (error) {
       console.log(error);
     }
@@ -37,5 +34,14 @@ export class AnimeApiService {
       title: anime.title || 'Untitled',
       genres: anime.genres?.map(g => g.name) || [],
     }));
+  }
+
+  static dedupeAnime(animeList) {
+    const seen = new Set();
+    return animeList.filter(anime => {
+      if (seen.has(anime.mal_id)) return false;
+      seen.add(anime.mal_id);
+      return true;
+    });
   }
 }

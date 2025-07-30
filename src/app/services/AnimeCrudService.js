@@ -5,36 +5,24 @@ import {
   doc,
   getDocs,
 } from 'firebase/firestore';
-import { db } from './DBService';
+import { db } from '@/app/lib/firebase/config';
 
 export class AnimeCrudService {
-  static animeCollectionRef = collection(db, 'animes');
-
-  static async getAllAnime() {
-    try {
-      const docsSnap = await getDocs(this.animeCollectionRef);
-      return docsSnap.docs.map(doc => {
-        return { id: doc.id, ...doc.data() };
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  static async getAllAnime(uid) {
+    if (!uid) return;
+    const animeListRef = collection(db, 'users', uid, 'animelist');
+    const animeList = await getDocs(animeListRef);
+    return animeList.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
 
-  static async addAnime(animeObject) {
-    try {
-      await addDoc(this.animeCollectionRef, animeObject);
-    } catch (error) {
-      console.log(error);
-    }
+  static async addAnime(uid, animeObject) {
+    if (!uid) return;
+    const AnimeSubCollection = collection(db, 'users', uid, 'animelist');
+    await addDoc(AnimeSubCollection, animeObject);
   }
 
-  static async deleteAnime(animeId) {
-    try {
-      const docToDelRef = doc(db, 'animes', animeId);
-      await deleteDoc(docToDelRef);
-    } catch (error) {
-      console.log(error);
-    }
+  static async deleteAnime(uid, animeId) {
+    const docToDelRef = doc(db, 'users', uid, 'animelist', animeId);
+    await deleteDoc(docToDelRef);
   }
 }

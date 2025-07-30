@@ -1,25 +1,26 @@
 'use client';
-import {
-  TextField,
-  Container,
-  Box,
-  Button,
-  Grid,
-  CircularProgress,
-} from '@mui/material';
+
+import { TextField, Container, Box, Button, Grid } from '@mui/material';
 import React, { useState, useMemo, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import { AnimeApiService } from '../services/AnimeAPIService';
-import AnimeCard from '../components/AnimeCard';
+import { AnimeApiService } from '@/app/services/AnimeAPIService';
+import AnimeCard from '@/app/components/AnimeCard';
+import AnimeCardSkeleton from '@/app/components/AnimeCardSkeleton';
+import useSaveUser from '@/app/hooks/useSaveUser';
 
 const page = () => {
   const [animeList, setAnimeList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const savedUser = useSaveUser();
 
   const renderedAnime = useMemo(() => {
     return animeList.map((anime, i) => <AnimeCard key={i} anime={anime} />);
   }, [animeList]);
+
+  const skeletonAnime = new Array(6).fill(0).map((_val, i) => {
+    return <AnimeCardSkeleton key={i} />;
+  });
 
   useEffect(() => {
     const fetchAiringAnime = async () => {
@@ -59,16 +60,9 @@ const page = () => {
           <SearchIcon />
         </Button>
       </Box>
-      {loading && (
-        <Box className="text-center mt-36">
-          <CircularProgress color="inherit" />
-        </Box>
-      )}
-      {!loading && (
-        <Grid container className="justify-center" spacing={4}>
-          {renderedAnime}
-        </Grid>
-      )}
+      <Grid container className="justify-center" spacing={4}>
+        {loading || !savedUser ? skeletonAnime : renderedAnime}
+      </Grid>
     </Container>
   );
 };

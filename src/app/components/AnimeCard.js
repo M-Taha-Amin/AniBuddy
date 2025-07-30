@@ -8,24 +8,44 @@ import {
   Chip,
   Typography,
   Button,
+  useMediaQuery,
 } from '@mui/material';
-import { AnimeCrudService } from '../services/AnimeCrudService';
+import { AnimeCrudService } from '@/app/services/AnimeCrudService';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/app/lib/firebase/config';
+import { toast } from 'react-toastify';
 
 const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
+  const [user] = useAuthState(auth);
+  const isSmallScreen = useMediaQuery('(max-width:480px)');
+
   const addAnime = async () => {
-    await AnimeCrudService.addAnime(anime);
-    alert('Anime added to DB');
+    await toast.promise(AnimeCrudService.addAnime(user.uid, anime), {
+      pending: 'Adding Anime to List',
+      success: 'Anime Added',
+      error: 'Failed to Add Anime to List',
+    });
   };
 
   const deleteAnime = async () => {
-    await AnimeCrudService.deleteAnime(anime.id);
+    await toast.promise(AnimeCrudService.deleteAnime(user?.uid, anime.id), {
+      pending: 'Removing Anime',
+      success: 'Anime Removed',
+      error: 'Failed to Remove Anime',
+    });
     onRemove();
   };
 
   const onClick = page == 'explore' ? addAnime : deleteAnime;
 
   return (
-    <Card className="w-fit h-fit max-w-[350px] min-w-[300px]" elevation={2}>
+    <Card
+      className="w-fit h-fit"
+      sx={{
+        maxWidth: '350px',
+        minWidth: isSmallScreen ? '250px' : '300px',
+      }}
+      elevation={2}>
       <CardMedia className="object-contain w-full h-56" image={anime.poster} />
       <CardContent>
         {/* Title and status container */}
@@ -51,16 +71,23 @@ const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
         </Box>
         {/* Details & Add to List Buttons */}
         <Box className="flex gap-2 mt-8">
-          <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            size={isSmallScreen ? 'small' : 'medium'}
+            color="primary"
+            sx={{ mt: 2 }}>
             Details
           </Button>
-          <Button
-            variant="outlined"
-            color={page == 'explore' ? 'success' : 'error'}
-            sx={{ mt: 2 }}
-            onClick={onClick}>
-            {page == 'explore' ? 'Add to List' : 'Remove'}
-          </Button>
+          {user && (
+            <Button
+              variant="outlined"
+              color={page == 'explore' ? 'success' : 'error'}
+              sx={{ mt: 2 }}
+              size={isSmallScreen ? 'small' : 'medium'}
+              onClick={onClick}>
+              {page == 'explore' ? 'Add to List' : 'Remove'}
+            </Button>
+          )}
         </Box>
       </CardContent>
     </Card>
