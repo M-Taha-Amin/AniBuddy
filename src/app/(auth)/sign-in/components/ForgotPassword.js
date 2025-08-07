@@ -26,7 +26,6 @@ function ForgotPassword({ open, handleClose }) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (emailRegex.test(emailRef.current.value)) {
-              console.log(emailRef.current.value);
               await sendPwdResetEmail(emailRef.current.value);
               alert('Password reset email sent, check your inbox spam folder!');
             } else {

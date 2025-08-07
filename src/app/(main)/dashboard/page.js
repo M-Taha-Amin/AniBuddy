@@ -4,11 +4,11 @@ import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import { AnimeCrudService } from '@/app/services/AnimeCrudService';
 import { cryingFaces } from './cryingFaces';
 import { useEffect, useState } from 'react';
-import AnimeCard from '@/app/components/AnimeCard';
 import ProtectedRoute from '@/app/components/ProtectedRoute';
 import useSaveUser from '@/app/hooks/useSaveUser';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/lib/firebase/config';
+import DashboardAnimeCard from '@/app/components/AnimeCards/DashboardAnimeCard';
 
 const Page = () => {
   const [animeList, setAnimeList] = useState(null);
@@ -65,10 +65,9 @@ const Page = () => {
         <div>
           <Grid container className="mt-12 justify-center" spacing={6}>
             {animeList.map((anime, i) => (
-              <AnimeCard
+              <DashboardAnimeCard
                 key={i}
                 anime={anime}
-                page="dashboard"
                 onRemove={() => {
                   const filteredList = animeList.filter(
                     listAnime => listAnime.mal_id != anime.mal_id

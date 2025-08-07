@@ -15,17 +15,9 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/lib/firebase/config';
 import { toast } from 'react-toastify';
 
-const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
+const DashboardAnimeCard = ({ anime, onRemove }) => {
   const [user] = useAuthState(auth);
   const isSmallScreen = useMediaQuery('(max-width:480px)');
-
-  const addAnime = async () => {
-    await toast.promise(AnimeCrudService.addAnime(user.uid, anime), {
-      pending: 'Adding Anime to List',
-      success: 'Anime Added',
-      error: 'Failed to Add Anime to List',
-    });
-  };
 
   const deleteAnime = async () => {
     await toast.promise(AnimeCrudService.deleteAnime(user?.uid, anime.id), {
@@ -36,7 +28,11 @@ const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
     onRemove();
   };
 
-  const onClick = page == 'explore' ? addAnime : deleteAnime;
+  let ratingVariant;
+
+  if (anime?.rating < 3) ratingVariant = 'error';
+  else if (anime?.rating < 7) ratingVariant = 'warning';
+  else ratingVariant = 'success';
 
   return (
     <Card
@@ -44,8 +40,19 @@ const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
       sx={{
         maxWidth: '350px',
         minWidth: isSmallScreen ? '250px' : '300px',
+        position: 'relative',
       }}
       elevation={2}>
+      {/* Rating badge */}
+      <Chip
+        label={anime.rating + ' / 10'}
+        color={ratingVariant}
+        sx={{
+          position: 'absolute',
+          right: 6,
+          top: 6,
+        }}
+      />
       <CardMedia className="object-contain w-full h-56" image={anime.poster} />
       <CardContent>
         {/* Title and status container */}
@@ -69,23 +76,23 @@ const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
             <Chip key={i} label={genre} size="small" />
           ))}
         </Box>
-        {/* Details & Add to List Buttons */}
+        {/* Edit Details & Remove from List Buttons */}
         <Box className="flex gap-2 mt-8">
           <Button
             variant="contained"
             size={isSmallScreen ? 'small' : 'medium'}
             color="primary"
             sx={{ mt: 2 }}>
-            Details
+            Edit
           </Button>
           {user && (
             <Button
               variant="outlined"
-              color={page == 'explore' ? 'success' : 'error'}
+              color="error"
               sx={{ mt: 2 }}
               size={isSmallScreen ? 'small' : 'medium'}
-              onClick={onClick}>
-              {page == 'explore' ? 'Add to List' : 'Remove'}
+              onClick={deleteAnime}>
+              Remove
             </Button>
           )}
         </Box>
@@ -94,4 +101,4 @@ const AnimeCard = ({ anime, page = 'explore', onRemove }) => {
   );
 };
 
-export default AnimeCard;
+export default DashboardAnimeCard;

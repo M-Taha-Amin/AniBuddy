@@ -4,11 +4,11 @@ import { TextField, Container, Box, Button, Grid } from '@mui/material';
 import React, { useState, useMemo, useEffect } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { AnimeApiService } from '@/app/services/AnimeAPIService';
-import AnimeCard from '@/app/components/AnimeCard';
 import AnimeCardSkeleton from '@/app/components/AnimeCardSkeleton';
 import useSaveUser from '@/app/hooks/useSaveUser';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/lib/firebase/config';
+import ExploreAnimeCard from '@/app/components/AnimeCards/ExploreAnimeCard';
 
 const page = () => {
   const [animeList, setAnimeList] = useState([]);
@@ -18,7 +18,9 @@ const page = () => {
   const savedUser = useSaveUser(user);
 
   const renderedAnime = useMemo(() => {
-    return animeList.map((anime, i) => <AnimeCard key={i} anime={anime} />);
+    return animeList.map((anime, i) => (
+      <ExploreAnimeCard key={i} anime={anime} />
+    ));
   }, [animeList]);
 
   const skeletonAnime = new Array(6).fill(0).map((_val, i) => {
