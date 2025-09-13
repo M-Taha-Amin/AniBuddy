@@ -52,6 +52,8 @@ const ExploreAnimeCard = ({ anime }) => {
         {/* Details & Add to List Buttons */}
         <Box className="flex gap-2 mt-8">
           <Button
+            href={`https://myanimelist.net/anime/${anime.mal_id}`}
+            target="_blank"
             variant="contained"
             size={isSmallScreen ? 'small' : 'medium'}
             color="primary"

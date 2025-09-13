@@ -8,9 +8,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { ArtTrack } from '@mui/icons-material';
 import Link from 'next/link';
@@ -18,8 +16,7 @@ import { useAuthState, useSignOut } from 'react-firebase-hooks/auth';
 import { auth } from '../lib/firebase/config';
 import { useState } from 'react';
 
-const pages = ['Explore'];
-const settings = ['Profile'];
+const pages = ['Explore', 'Recommend'];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -161,11 +158,17 @@ function Navbar() {
           )}
           {user && (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar>{user?.displayName?.[0]}</Avatar>
-                </IconButton>
-              </Tooltip>
+              <Button
+                target="_blank"
+                onClick={async () => {
+                  handleCloseUserMenu();
+                  await signOut();
+                }}
+                variant="contained"
+                size="medium"
+                color="primary">
+                Logout
+              </Button>
 
               <Menu
                 sx={{ mt: '45px' }}
@@ -181,22 +184,7 @@ function Navbar() {
                   horizontal: 'right',
                 }}
                 open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}>
-                {settings.map(setting => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: 'center' }}>
-                      {setting}
-                    </Typography>
-                  </MenuItem>
-                ))}
-                <MenuItem
-                  onClick={async () => {
-                    handleCloseUserMenu();
-                    await signOut();
-                  }}>
-                  <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
-                </MenuItem>
-              </Menu>
+                onClose={handleCloseUserMenu}></Menu>
             </Box>
           )}
         </Toolbar>

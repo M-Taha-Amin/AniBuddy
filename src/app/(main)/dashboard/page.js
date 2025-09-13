@@ -11,16 +11,16 @@ import { auth } from '@/app/lib/firebase/config';
 import DashboardAnimeCard from '@/app/components/AnimeCards/DashboardAnimeCard';
 
 const Page = () => {
-  const [animeList, setAnimeList] = useState(null);
   const [user] = useAuthState(auth);
   const savedUser = useSaveUser(user);
   const [fetching, setFetching] = useState(true);
+  const [watchList, setWatchList] = useState(null);
 
   useEffect(() => {
     const fetchAnimeList = async () => {
       setFetching(true);
       const list = await AnimeCrudService.getAllAnime(user?.uid);
-      setAnimeList(list);
+      setWatchList(list);
       setFetching(false);
     };
     fetchAnimeList();
@@ -31,7 +31,7 @@ const Page = () => {
 
   return (
     <ProtectedRoute>
-      {(animeList === null || !savedUser || fetching) && (
+      {(watchList === null || !savedUser || fetching) && (
         <Box
           sx={{
             minHeight: 'calc(100vh - 75px)',
@@ -43,7 +43,7 @@ const Page = () => {
         </Box>
       )}
 
-      {animeList?.length === 0 && (
+      {watchList?.length === 0 && (
         <Box
           sx={{
             minHeight: 'calc(100vh - 75px)',
@@ -61,18 +61,18 @@ const Page = () => {
         </Box>
       )}
 
-      {animeList?.length > 0 && (
+      {watchList?.length > 0 && (
         <div>
           <Grid container className="mt-12 justify-center" spacing={6}>
-            {animeList.map((anime, i) => (
+            {watchList.map((anime, i) => (
               <DashboardAnimeCard
                 key={i}
                 anime={anime}
                 onRemove={() => {
-                  const filteredList = animeList.filter(
+                  const filteredList = watchList.filter(
                     listAnime => listAnime.mal_id != anime.mal_id
                   );
-                  setAnimeList(filteredList);
+                  setWatchList(filteredList);
                 }}
               />
             ))}

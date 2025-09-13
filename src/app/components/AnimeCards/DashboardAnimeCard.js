@@ -14,6 +14,8 @@ import { AnimeCrudService } from '@/app/services/AnimeCrudService';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/lib/firebase/config';
 import { toast } from 'react-toastify';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditAnimeDialog from '../EditAnimeDialog';
 
 const DashboardAnimeCard = ({ anime, onRemove }) => {
   const [user] = useAuthState(auth);
@@ -80,11 +82,14 @@ const DashboardAnimeCard = ({ anime, onRemove }) => {
         <Box className="flex gap-2 mt-8">
           <Button
             variant="contained"
+            href={`https://myanimelist.net/anime/${anime.mal_id}`}
+            target="_blank"
             size={isSmallScreen ? 'small' : 'medium'}
             color="primary"
             sx={{ mt: 2 }}>
-            Edit
+            Details
           </Button>
+          <EditAnimeDialog anime={anime} />
           {user && (
             <Button
               variant="outlined"
@@ -92,7 +97,7 @@ const DashboardAnimeCard = ({ anime, onRemove }) => {
               sx={{ mt: 2 }}
               size={isSmallScreen ? 'small' : 'medium'}
               onClick={deleteAnime}>
-              Remove
+              <DeleteIcon />
             </Button>
           )}
         </Box>

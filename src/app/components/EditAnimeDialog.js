@@ -19,26 +19,28 @@ import { forwardRef, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AnimeCrudService } from '../services/AnimeCrudService';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '../lib/firebase/config';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { auth } from '../lib/firebase/config';
+import EditIcon from '@mui/icons-material/Edit';
+import { useRouter } from 'next/navigation';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const AddAnimeDialog = ({ anime }) => {
+const EditAnimeDialog = ({ anime }) => {
   const [open, setOpen] = useState(false);
   const isSmallScreen = useMediaQuery('(max-width:648px)');
-  const [status, setStatus] = useState('default');
+  const [status, setStatus] = useState(anime?.status);
   const [statusError, setStatusError] = useState(false);
   const [statusErrorMessage, setStatusErrorMessage] = useState('');
-  const [rating, setRating] = useState('');
+  const [rating, setRating] = useState(anime?.rating);
   const [ratingError, setRatingError] = useState(false);
   const [ratingErrorMessage, setRatingErrorMessage] = useState(false);
   const [user] = useAuthState(auth);
+  const router = useRouter();
 
   useEffect(() => {
-    const validStatus = ['Watching', 'On-Hold', 'Finished', 'default'];
+    const validStatus = ['Watching', 'On-Hold', 'Finished'];
 
     if (!validStatus.includes(status)) {
       setStatusError(true);
@@ -60,22 +62,11 @@ const AddAnimeDialog = ({ anime }) => {
     }
   }, [rating]);
 
-  const addAnime = async anime => {
-    const loading = toast.loading('Checking if Anime already added');
-    const q = query(
-      collection(db, 'users', user.uid, 'animelist'),
-      where('mal_id', '==', anime.mal_id)
-    );
-    const docs = await getDocs(q);
-    toast.dismiss(loading);
-    if (!docs.empty) {
-      toast.error('Anime Already Added');
-      return;
-    }
-    await toast.promise(AnimeCrudService.addAnime(user.uid, anime), {
-      pending: 'Adding Anime to List',
-      success: 'Anime Added',
-      error: 'Failed to Add Anime to List',
+  const editAnime = async anime => {
+    await toast.promise(AnimeCrudService.editAnime(user.uid, anime), {
+      pending: 'Editing Anime Details',
+      success: 'Anime Updated',
+      error: 'Failed to update Anime',
     });
   };
 
@@ -92,29 +83,20 @@ const AddAnimeDialog = ({ anime }) => {
     if (statusError || ratingError) return;
     anime.rating = parseFloat(rating).toFixed(1);
     anime.status = status;
-    if (status == 'default') {
-      setStatusError(true);
-      setStatusErrorMessage('Please select status');
-      return;
-    }
-    if (rating == '') {
-      setRatingError(true);
-      setRatingErrorMessage('Please select a rating value');
-      return;
-    }
-    await addAnime(anime);
+    await editAnime(anime);
     handleClose();
+    router.refresh();
   };
 
   return (
     <>
       <Button
         variant="outlined"
+        size={isSmallScreen ? 'small' : 'medium'}
         color="success"
         sx={{ mt: 2 }}
-        size="medium"
         onClick={handleClickOpen}>
-        Add to List
+        <EditIcon />
       </Button>
       <Dialog
         open={open}
@@ -126,7 +108,7 @@ const AddAnimeDialog = ({ anime }) => {
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description">
         <DialogTitle>
-          Add <b>{anime?.title}</b>
+          Edit <b>{anime?.title}</b> Details
         </DialogTitle>
         <Box className="min-w-[450px]" id="add-anime-form" sx={{ p: '24px' }}>
           <FormControl fullWidth>
@@ -139,7 +121,7 @@ const AddAnimeDialog = ({ anime }) => {
               onChange={e => {
                 setStatus(e.target.value);
               }}>
-              <MenuItem value={'default'} disabled>
+              <MenuItem value={''} disabled>
                 Select Status
               </MenuItem>
               <MenuItem value={'Watching'}>Watching</MenuItem>
@@ -177,7 +159,7 @@ const AddAnimeDialog = ({ anime }) => {
             Cancel
           </Button>
           <Button form="add-anime-form" color="primary" onClick={handleSubmit}>
-            Add
+            Update
           </Button>
         </DialogActions>
       </Dialog>
@@ -185,4 +167,4 @@ const AddAnimeDialog = ({ anime }) => {
   );
 };
 
-export default AddAnimeDialog;
+export default EditAnimeDialog;

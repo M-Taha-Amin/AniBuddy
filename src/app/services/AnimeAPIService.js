@@ -20,6 +20,7 @@ export class AnimeApiService {
         this.BASE_URL + 'top/anime?sfw=true&filter=airing'
       );
       const data = await response.json();
+      console.log(data);
       return this.dedupeAnime(this.sanitizeResponse(data));
     } catch (error) {
       console.log(error);
@@ -31,7 +32,7 @@ export class AnimeApiService {
       mal_id: anime?.mal_id,
       poster: anime.images?.jpg?.image_url || '',
       status: anime.status || 'Unknown',
-      title: anime.title || 'Untitled',
+      title: anime.title_english || anime.title || 'Untitled',
       genres: anime.genres?.map(g => g.name) || [],
     }));
   }
