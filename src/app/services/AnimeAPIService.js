@@ -5,7 +5,7 @@ export class AnimeApiService {
     const sanitizedName = encodeURIComponent(name.toLowerCase());
     try {
       const response = await fetch(
-        this.BASE_URL + `anime?sfw=true&q=${sanitizedName}`
+        this.BASE_URL + `anime?q=${sanitizedName}`
       );
       const data = await response.json();
       return this.sanitizeResponse(data);
@@ -17,7 +17,7 @@ export class AnimeApiService {
   static async getTopAiringAnime() {
     try {
       const response = await fetch(
-        this.BASE_URL + 'top/anime?sfw=true&filter=airing'
+        this.BASE_URL + 'top/anime?filter=airing'
       );
       const data = await response.json();
       console.log(data);
