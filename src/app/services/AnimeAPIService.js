@@ -1,40 +1,90 @@
 export class AnimeApiService {
-  static BASE_URL = 'https://api.jikan.moe/v4/';
+  static API_URL = 'https://graphql.anilist.co';
+
+  static MEDIA_FIELDS = `
+    idMal
+    status
+    title { english romaji }
+    coverImage { large }
+    genres
+  `;
+
+  static STATUS_MAP = {
+    FINISHED: 'Finished Airing',
+    RELEASING: 'Currently Airing',
+    NOT_YET_RELEASED: 'Not yet aired',
+    CANCELLED: 'Cancelled',
+    HIATUS: 'On Hiatus',
+  };
+
+  static async query(query, variables) {
+    const response = await fetch(this.API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+    if (!response.ok) {
+      throw new Error(`Anilist request failed with status ${response.status}`);
+    }
+    const json = await response.json();
+
+    if (json.errors) {
+      throw new Error(json.errors.map(e => e.message).join(', '));
+    }
+
+    return json.data;
+  }
 
   static async getAnimeByName(name) {
-    const sanitizedName = encodeURIComponent(name.toLowerCase());
+    const search = `
+    query ($search: String) {
+      Page(perPage: 25) {
+        media(search: $search, type: ANIME, isAdult: false, sort: SEARCH_MATCH) {
+          ${this.MEDIA_FIELDS}
+        }
+      }
+    }
+    `;
     try {
-      const response = await fetch(
-        this.BASE_URL + `anime?q=${sanitizedName}`
-      );
-      const data = await response.json();
-      return this.sanitizeResponse(data);
+      const data = await this.query(search, { search: name.trim() });
+      return this.sanitizeResponse(data.Page.media);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      return [];
     }
   }
 
   static async getTopAiringAnime() {
+    const topQuery = `
+    query {
+      Page(perPage: 25) {
+        media(type: ANIME, status: RELEASING, isAdult: false, sort: POPULARITY_DESC) {
+          ${this.MEDIA_FIELDS}
+        }
+      }
+    }
+    `;
     try {
-      const response = await fetch(
-        this.BASE_URL + 'top/anime?filter=airing'
-      );
-      const data = await response.json();
-      console.log(data);
-      return this.dedupeAnime(this.sanitizeResponse(data));
+      const data = await this.query(topQuery, {});
+      return this.dedupeAnime(this.sanitizeResponse(data.Page.media));
     } catch (error) {
       console.log(error);
+      return [];
     }
   }
 
-  static sanitizeResponse(responseObject) {
-    return responseObject.data.map(anime => ({
-      mal_id: anime?.mal_id,
-      poster: anime.images?.jpg?.image_url || '',
-      status: anime.status || 'Unknown',
-      title: anime.title_english || anime.title || 'Untitled',
-      genres: anime.genres?.map(g => g.name) || [],
-    }));
+  static sanitizeResponse(animeList) {
+    return (animeList || [])
+      .filter(anime => anime?.idMal)
+      .map(anime => ({
+        mal_id: anime?.idMal,
+        poster: anime.coverImage?.large || '',
+        status: this.STATUS_MAP[anime.status] || 'Unknown',
+        title: anime.title?.english || anime.title?.romaji || 'Untitled',
+        genres: anime.genres || [],
+      }));
   }
 
   static dedupeAnime(animeList) {
